@@ -5,14 +5,19 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.SearchView
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.kisileruygulamasi.R
+import com.example.kisileruygulamasi.adapter.KisilerAdapter
 import com.example.kisileruygulamasi.databinding.FragmentAnasayfaBinding
 import com.example.kisileruygulamasi.entity.Kisiler
 import com.google.android.material.snackbar.Snackbar
 
 
-class AnasayfaFragment : Fragment() {
+class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var binding: FragmentAnasayfaBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,16 +28,25 @@ class AnasayfaFragment : Fragment() {
         binding.toolbarAnasayfa.title = "Kişiler"
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarAnasayfa)
 
+        binding.rv.layoutManager = LinearLayoutManager(requireContext())
+        //binding.rv.layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL)
+
+        val kisilerListesi = ArrayList<Kisiler>()
+        val k1 = Kisiler(1, "Ahmet", "11111")
+        val k2 = Kisiler(2, "Mürsel", "22222")
+        val k3 = Kisiler(3, "Rumeysa", "33333")
+        kisilerListesi.add(k1)
+        kisilerListesi.add(k2)
+        kisilerListesi.add(k3)
+
+        val adapter = KisilerAdapter(requireContext(), kisilerListesi)
+        binding.rv.adapter = adapter
 
         binding.fab.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.anasayfaToKisiKayit)
         }
 
-        binding.buttonDetay.setOnClickListener {
-            val kisi = Kisiler(1, "Ahmet", "111111")
-            val gecis = AnasayfaFragmentDirections.anasayfaToKisiDetay(kisi = kisi)
-            Navigation.findNavController(it).navigate(gecis)
-        }
+
         return binding.root
     }
 
@@ -43,21 +57,26 @@ class AnasayfaFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_menu, menu)
+
+        val item = menu.findItem(R.id.action_ara)
+        val searchView = item.actionView as SearchView
+        searchView.setOnQueryTextListener(this)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_ara -> {
-                Log.e("Kişi Menü", "Ara tıklandı.")
-                return true
-            }
-            R.id.action_cikis -> {
-                Log.e("Kişi Menü", "Çıkış tıklandı.")
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-
+    override fun onQueryTextSubmit(query: String): Boolean {
+        ara(query)
+        return true
     }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        ara(newText)
+        return true
+    }
+
+    fun ara(aramaKelimesi: String) {
+        Log.e("Kişi Ara", aramaKelimesi)
+    }
+
 }
