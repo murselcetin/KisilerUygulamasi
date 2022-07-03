@@ -1,4 +1,4 @@
-package com.example.kisileruygulamasi.entity
+package com.example.kisileruygulamasi.data.entity
 
 import java.io.Serializable
 
