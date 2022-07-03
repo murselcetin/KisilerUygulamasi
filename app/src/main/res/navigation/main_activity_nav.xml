@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/anasayfaFragment"
-        android:name="com.example.kisileruygulamasi.fragment.AnasayfaFragment"
+        android:name="com.example.kisileruygulamasi.ui.fragment.AnasayfaFragment"
         android:label="fragment_anasayfa"
         tools:layout="@layout/fragment_anasayfa" >
         <action
@@ -19,16 +19,16 @@
     </fragment>
     <fragment
         android:id="@+id/kisiDetayFragment"
-        android:name="com.example.kisileruygulamasi.fragment.KisiDetayFragment"
+        android:name="com.example.kisileruygulamasi.ui.fragment.KisiDetayFragment"
         android:label="fragment_kisi_detay"
         tools:layout="@layout/fragment_kisi_detay" >
         <argument
             android:name="kisi"
-            app:argType="com.example.kisileruygulamasi.entity.Kisiler" />
+            app:argType="com.example.kisileruygulamasi.data.entity.Kisiler" />
     </fragment>
     <fragment
         android:id="@+id/kisiKayitFragment"
-        android:name="com.example.kisileruygulamasi.fragment.KisiKayitFragment"
+        android:name="com.example.kisileruygulamasi.ui.fragment.KisiKayitFragment"
         android:label="fragment_kisi_kayit"
         tools:layout="@layout/fragment_kisi_kayit" />
 </navigation>

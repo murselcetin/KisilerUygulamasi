@@ -1,58 +1,52 @@
-package com.example.kisileruygulamasi.fragment
+package com.example.kisileruygulamasi.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.SearchView
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.kisileruygulamasi.R
-import com.example.kisileruygulamasi.adapter.KisilerAdapter
+import com.example.kisileruygulamasi.ui.adapter.KisilerAdapter
 import com.example.kisileruygulamasi.databinding.FragmentAnasayfaBinding
-import com.example.kisileruygulamasi.entity.Kisiler
-import com.google.android.material.snackbar.Snackbar
+import com.example.kisileruygulamasi.data.entity.Kisiler
+import com.example.kisileruygulamasi.ui.viewmodel.AnasayfaFragmentViewModel
+import com.example.kisileruygulamasi.util.gecisYap
 
 
 class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var binding: FragmentAnasayfaBinding
+    private lateinit var viewModel: AnasayfaFragmentViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAnasayfaBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_anasayfa, container, false)
+        binding.anasayfaFragment = this
 
-        binding.toolbarAnasayfa.title = "Kişiler"
+        binding.anasayfaToolbarBaslik = "Kişiler"
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarAnasayfa)
 
-        binding.rv.layoutManager = LinearLayoutManager(requireContext())
-        //binding.rv.layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL)
-
-        val kisilerListesi = ArrayList<Kisiler>()
-        val k1 = Kisiler(1, "Ahmet", "11111")
-        val k2 = Kisiler(2, "Mürsel", "22222")
-        val k3 = Kisiler(3, "Rumeysa", "33333")
-        kisilerListesi.add(k1)
-        kisilerListesi.add(k2)
-        kisilerListesi.add(k3)
-
-        val adapter = KisilerAdapter(requireContext(), kisilerListesi)
-        binding.rv.adapter = adapter
-
-        binding.fab.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.anasayfaToKisiKayit)
+        viewModel.kisilerListesi.observe(viewLifecycleOwner){
+            val adapter = KisilerAdapter(requireContext(), it, viewModel)
+            binding.kisilerAdapter = adapter
         }
-
-
         return binding.root
+    }
+
+    fun fabTikla(v: View) {
+        Navigation.gecisYap(v,R.id.kisiKayitFragment)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val tempViewModel: AnasayfaFragmentViewModel by viewModels()
+        viewModel = tempViewModel
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -66,17 +60,12 @@ class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        ara(query)
+        viewModel.ara(query)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        ara(newText)
+        viewModel.ara(newText)
         return true
     }
-
-    fun ara(aramaKelimesi: String) {
-        Log.e("Kişi Ara", aramaKelimesi)
-    }
-
 }
