@@ -60,6 +60,11 @@ class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.kisilerYukle()
+    }
+
     override fun onQueryTextSubmit(query: String): Boolean {
         viewModel.ara(query)
         return true
