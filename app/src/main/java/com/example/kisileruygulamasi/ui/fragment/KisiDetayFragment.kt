@@ -13,8 +13,9 @@ import com.example.kisileruygulamasi.R
 import com.example.kisileruygulamasi.databinding.FragmentKisiDetayBinding
 import com.example.kisileruygulamasi.ui.viewmodel.KisiDetayFragmentViewModel
 import com.example.kisileruygulamasi.ui.viewmodel.KisiKayitFragmentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class KisiDetayFragment : Fragment() {
     private lateinit var binding: FragmentKisiDetayBinding
     private lateinit var viewModel: KisiDetayFragmentViewModel
@@ -39,7 +40,7 @@ class KisiDetayFragment : Fragment() {
         viewModel = tempViewModel
     }
 
-    fun buttonGuncelleTikla(kisi_id: Int, kisi_ad: String, kisi_tel: String) {
+    fun buttonGuncelleTikla(kisi_id: String, kisi_ad: String, kisi_tel: String) {
         viewModel.Guncelle(kisi_id, kisi_ad, kisi_tel)
     }
 }

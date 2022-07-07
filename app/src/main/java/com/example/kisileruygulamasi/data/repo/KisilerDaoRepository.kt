@@ -3,42 +3,73 @@ package com.example.kisileruygulamasi.data.repo
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.kisileruygulamasi.data.entity.Kisiler
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 
 //DAO : Database Access Object
-class KisilerDaoRepository {
+class KisilerDaoRepository(var refKisiler: DatabaseReference) {
     var kisilerListesi: MutableLiveData<List<Kisiler>>
+
     init {
         kisilerListesi = MutableLiveData()
     }
 
-    fun kisileriGetir() : MutableLiveData<List<Kisiler>>{
-        return  kisilerListesi
+    fun kisileriGetir(): MutableLiveData<List<Kisiler>> {
+        return kisilerListesi
     }
 
     fun kisiKayit(kisi_ad: String, kisi_tel: String) {
-        Log.e("Kişi Kayıt", "$kisi_ad - $kisi_tel")
+        val yeniKisi = Kisiler("", kisi_ad, kisi_tel)
+        refKisiler.push().setValue(yeniKisi)
     }
 
-    fun kisiGuncelle(kisi_id: Int, kisi_ad: String, kisi_tel: String) {
-        Log.e("Kişi Güncelle", "$kisi_id - $kisi_ad - $kisi_tel")
+    fun kisiGuncelle(kisi_id: String, kisi_ad: String, kisi_tel: String) {
+        val bilgiler = HashMap<String, Any>()
+        bilgiler["kisi_ad"] = kisi_ad
+        bilgiler["kisi_tel"] = kisi_tel
+        refKisiler.child(kisi_id).updateChildren(bilgiler)
     }
 
     fun kisiAra(aramaKelimesi: String) {
-        Log.e("Kişi Ara", aramaKelimesi)
+        refKisiler.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val liste = ArrayList<Kisiler>()
+                for (d in snapshot.children) {
+                    val kisi = d.getValue(Kisiler::class.java)
+                    if (kisi != null) {
+                        if(kisi.kisi_ad!!.lowercase().contains(aramaKelimesi.lowercase())){
+                            kisi.kisi_id = d.key
+                            liste.add(kisi)
+                        }
+                    }
+                }
+                kisilerListesi.value = liste
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
-    fun kisiSil(kisi_id: Int) {
-        Log.e("Kişi Sil", kisi_id.toString())
+    fun kisiSil(kisi_id: String) {
+        refKisiler.child(kisi_id).removeValue()
     }
 
     fun tumKisileriAl() {
-        val liste = ArrayList<Kisiler>()
-        val k1 = Kisiler(1, "Ahmet", "11111")
-        val k2 = Kisiler(2, "Mürsel", "22222")
-        val k3 = Kisiler(3, "Rumeysa", "33333")
-        liste.add(k1)
-        liste.add(k2)
-        liste.add(k3)
-        kisilerListesi.value = liste
+        refKisiler.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val liste = ArrayList<Kisiler>()
+                for (d in snapshot.children) {
+                    val kisi = d.getValue(Kisiler::class.java)
+                    if (kisi != null) {
+                        kisi.kisi_id = d.key
+                        liste.add(kisi)
+                    }
+                }
+                kisilerListesi.value = liste
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 }

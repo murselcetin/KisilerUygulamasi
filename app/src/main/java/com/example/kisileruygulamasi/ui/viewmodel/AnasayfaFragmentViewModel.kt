@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.kisileruygulamasi.data.entity.Kisiler
 import com.example.kisileruygulamasi.data.repo.KisilerDaoRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AnasayfaFragmentViewModel: ViewModel() {
-    val krepo = KisilerDaoRepository()
+@HiltViewModel
+class AnasayfaFragmentViewModel @Inject constructor(var krepo:KisilerDaoRepository): ViewModel() {
     var kisilerListesi = MutableLiveData<List<Kisiler>>()
 
     init {
@@ -19,7 +21,7 @@ class AnasayfaFragmentViewModel: ViewModel() {
         krepo.kisiAra(aramaKelimesi)
     }
 
-    fun sil(kisi_id: Int) {
+    fun sil(kisi_id: String) {
         krepo.kisiSil(kisi_id)
     }
 
