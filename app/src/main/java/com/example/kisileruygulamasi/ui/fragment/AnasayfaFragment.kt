@@ -16,8 +16,9 @@ import com.example.kisileruygulamasi.databinding.FragmentAnasayfaBinding
 import com.example.kisileruygulamasi.data.entity.Kisiler
 import com.example.kisileruygulamasi.ui.viewmodel.AnasayfaFragmentViewModel
 import com.example.kisileruygulamasi.util.gecisYap
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var binding: FragmentAnasayfaBinding
     private lateinit var viewModel: AnasayfaFragmentViewModel
@@ -57,6 +58,11 @@ class AnasayfaFragment : Fragment(), SearchView.OnQueryTextListener {
         searchView.setOnQueryTextListener(this)
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.kisilerYukle()
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {

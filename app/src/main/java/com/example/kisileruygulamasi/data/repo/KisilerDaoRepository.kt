@@ -2,43 +2,85 @@ package com.example.kisileruygulamasi.data.repo
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.kisileruygulamasi.data.entity.CRUDCevap
 import com.example.kisileruygulamasi.data.entity.Kisiler
+import com.example.kisileruygulamasi.data.entity.KisilerCevap
+import com.example.kisileruygulamasi.retrofit.KisilerDao
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 //DAO : Database Access Object
-class KisilerDaoRepository {
+class KisilerDaoRepository(var kdao: KisilerDao) {
     var kisilerListesi: MutableLiveData<List<Kisiler>>
+
     init {
         kisilerListesi = MutableLiveData()
     }
 
-    fun kisileriGetir() : MutableLiveData<List<Kisiler>>{
-        return  kisilerListesi
+    fun kisileriGetir(): MutableLiveData<List<Kisiler>> {
+        return kisilerListesi
     }
 
     fun kisiKayit(kisi_ad: String, kisi_tel: String) {
-        Log.e("Kişi Kayıt", "$kisi_ad - $kisi_tel")
+        kdao.kisiEkle(kisi_ad, kisi_tel).enqueue(object : Callback<CRUDCevap> {
+            override fun onResponse(call: Call<CRUDCevap>?, response: Response<CRUDCevap>) {
+                val basari = response.body().success
+                val mesaj = response.body().message
+                Log.e("Kişi Kayıt", "$basari - $mesaj")
+            }
+
+            override fun onFailure(call: Call<CRUDCevap>?, t: Throwable?) {
+            }
+        })
     }
 
     fun kisiGuncelle(kisi_id: Int, kisi_ad: String, kisi_tel: String) {
-        Log.e("Kişi Güncelle", "$kisi_id - $kisi_ad - $kisi_tel")
+        kdao.kisiGuncelle(kisi_id, kisi_ad, kisi_tel).enqueue(object : Callback<CRUDCevap> {
+            override fun onResponse(call: Call<CRUDCevap>?, response: Response<CRUDCevap>) {
+                val basari = response.body().success
+                val mesaj = response.body().message
+                Log.e("Kişi Güncelle", "$basari - $mesaj")
+            }
+            override fun onFailure(call: Call<CRUDCevap>?, t: Throwable?) {
+            }
+        })
     }
 
     fun kisiAra(aramaKelimesi: String) {
-        Log.e("Kişi Ara", aramaKelimesi)
+        kdao.kisiAra(aramaKelimesi).enqueue(object : Callback<KisilerCevap> {
+            override fun onResponse(call: Call<KisilerCevap>?, response: Response<KisilerCevap>) {
+                val liste = response.body().kisiler
+                kisilerListesi.value = liste
+            }
+
+            override fun onFailure(call: Call<KisilerCevap>?, t: Throwable?) {
+            }
+        })
     }
 
     fun kisiSil(kisi_id: Int) {
-        Log.e("Kişi Sil", kisi_id.toString())
+        kdao.kisiSil(kisi_id).enqueue(object : Callback<CRUDCevap> {
+            override fun onResponse(call: Call<CRUDCevap>?, response: Response<CRUDCevap>) {
+                val basari = response.body().success
+                val mesaj = response.body().message
+                Log.e("Kişi Kayıt", "$basari - $mesaj")
+                tumKisileriAl()
+            }
+            override fun onFailure(call: Call<CRUDCevap>?, t: Throwable?) {
+            }
+        })
     }
 
     fun tumKisileriAl() {
-        val liste = ArrayList<Kisiler>()
-        val k1 = Kisiler(1, "Ahmet", "11111")
-        val k2 = Kisiler(2, "Mürsel", "22222")
-        val k3 = Kisiler(3, "Rumeysa", "33333")
-        liste.add(k1)
-        liste.add(k2)
-        liste.add(k3)
-        kisilerListesi.value = liste
+        kdao.tumKisiler().enqueue(object : Callback<KisilerCevap> {
+            override fun onResponse(call: Call<KisilerCevap>?, response: Response<KisilerCevap>) {
+                val liste = response.body().kisiler
+                kisilerListesi.value = liste
+            }
+
+            override fun onFailure(call: Call<KisilerCevap>?, t: Throwable?) {
+            }
+        })
     }
 }
